@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>190</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            padding-bottom: 220px;
+            background-image: url('imagem1902.jpg'); /* Caminho para a imagem */
+            background-size: cover; /* Ajusta a imagem para cobrir todo o fundo */
+            background-position: center; /* Centraliza a imagem */
+            background-repeat: no-repeat; /* Evita repetição da imagem */
+        }
+
+        .button-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .button-header button {
+            flex: 1;
+            min-width: 180px;
+            padding: 15px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #000;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        #perturbacao-button, #violencia-button, #furto-button, #alarme-button, #acidente-button, #outros-button {
+            background-color: rgba(44, 62, 80, 0.2); /* Mesma cor de Perturbação do sossego */
+        }
+
+        #perturbacao-button.active, #violencia-button.active, #furto-button.active, #alarme-button.active, #acidente-button.active, #outros-button.active {
+            background-color: #2c3e50; /* Mesma cor de Perturbação do sossego selecionado */
+            color: white; /* Mesma cor de Perturbação do sossego selecionado */
+        }
+
+        .button-header button.active {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        .fixed-result-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .fixed-result-container.dark-mode {
+            background: #333333; /* Cor cinza usada no modo escuro */
+        }
+
+        .result-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin: 10px 0;
+            border: 2px solid #2c3e50;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .form-section {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-section > label:first-child {
+            font-weight: bold;
+            min-width: 180px;
+        }
+
+        input, select {
+            padding: 6px 8px;
+            font-size: 14px;
+        }
+
+        /* Estilos específicos para Violência Doméstica */
+        #violencia-form .checkbox-container {
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #violencia-form .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        /* Estilos específicos para Furto/Roubo */
+        #furto-form .inline-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #furto-form .assaltantes-input {
+            display: none;
+            margin-left: 15px;
+        }
+	
+	/* Estilos específicos para Disparo de Alarme */
+	#alarme-form .checkbox-group,
+	#alarme-form .radio-group {
+    	    display: flex;
+    	    gap: 15px;
+    	    flex-wrap: wrap;
+	}
+
+	#alarme-form .contact-fields {
+    	    display: flex;
+    	    gap: 10px;
+    	    align-items: center;
+    	    flex-wrap: wrap;
+	}
+
+	#alarme-form .hidden {
+    	    display: none;
+	}
+
+	#alarme-form input[type="text"],
+	#alarme-form input[type="tel"] {
+    	    padding: 5px;
+    	    width: 150px;
+	}
+	
+        /* Estilos para a aba Outros */
+        #outros-form {
+            display: flex;
+            flex-wrap: wrap; /* Permite que os ícones quebrem linha conforme necessário */
+            gap: 15px;
+            padding: 20px;
+            width: 100%; /* Garante que o contêiner ocupe toda a largura */
+            justify-content: center; /* Centraliza os ícones */
+        }
+
+        .icone-opcao {
+            padding: 7.5px; /* Mantido o tamanho reduzido */
+            border: 1px solid #ddd; /* Mantido o tamanho reduzido */
+            border-radius: 4px; /* Mantido o tamanho reduzido */
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            flex: 1 1 calc(33.333% - 30px); /* Ocupa 1/3 da largura menos o gap */
+            box-sizing: border-box; /* Considera padding na largura */
+            min-height: 60px; /* Mantido o tamanho reduzido */
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Espaça os itens */
+        }
+
+        .icone-opcao:hover {
+            transform: translateY(-1.5px); /* Mantido o tamanho reduzido */
+            box-shadow: 0 1.5px 5px rgba(0,0,0,0.1); /* Mantido o tamanho reduzido */
+        }
+
+        .icone-selecionado {
+            background-color: #e3f2fd;
+            border-color: #2196F3;
+            font-weight: bold;
+        }
+
+        .icone-texto {
+            font-size: 16px; /* Mesma configuração da pergunta "Tipo de som" */
+            font-weight: bold; /* Deixar os nomes em negrito */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 20px; /* Aumentado o espaço entre as caixas de texto */
+            align-items: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .input-boxes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        h1 {
+            font-size: 24px; /* Diminui o tamanho da fonte */
+            text-align: center; /* Centraliza o texto */
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* Estilos para o botão de switch */
+        .switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Espaço entre as imagens e o switch */
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: relative;
+            width: 33.33px; /* 2/3 do tamanho original de 50px */
+            height: 16.67px; /* 2/3 do tamanho original de 25px */
+            background-color: #ccc;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 14px; /* 2/3 do tamanho original de 21px */
+            height: 14px; /* 2/3 do tamanho original de 21px */
+            border-radius: 50%;
+            background-color: white;
+            top: 1.33px; /* 2/3 do tamanho original de 2px */
+            left: 1.33px; /* 2/3 do tamanho original de 2px */
+            transition: transform 0.3s;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16.67px); /* 2/3 do tamanho original de 25px */
+        }
+
+        .sun-icon, .moon-icon {
+            width: 16.67px; /* 2/3 do tamanho original de 25px */
+            height: 16.67px; /* 2/3 do tamanho original de 25px */
+        }
+
+        .dark-mode .sun-icon, .dark-mode .moon-icon {
+            filter: invert(1); /* Inverte as cores para branco */
+        }
+
+        /* Estilos para o modo escuro */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .form-section.dark-mode {
+            background-color: #333333;
+            border-color: #555555;
+        }
+
+        .result-box.dark-mode {
+            background-color: #333333;
+            border-color: #555555;
+        }
+
+        .button-header button.dark-mode {
+            background-color: #444444;
+            color: #ffffff;
+        }
+
+        .icone-opcao.dark-mode {
+            background-color: #444444;
+            border-color: #555555;
+        }
+
+        .icone-opcao.dark-mode:hover {
+            box-shadow: 0 1.5px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .icone-selecionado.dark-mode {
+            background-color: #555555;
+            border-color: #666666;
+        }
+
+        .form-section.preset-section {
+            background-color: #e0f7fa; /* Azul bem claro */
+        }
+
+        #violencia-button {
+            background-color: #ffc4b7; /* Cor quando não está selecionado */
+        }
+
+        #violencia-button.active {
+            background-color: #ff0000; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#violencia-button {
+            background-color: #66403a; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#violencia-button.active {
+            background-color: #ff0000; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        #acidente-button {
+            background-color: #d4ebeb; /* Cor quando não está selecionado */
+        }
+
+        #acidente-button.active {
+            background-color: #136015; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#acidente-button {
+            background-color: #4a5c5c; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#acidente-button.active {
+            background-color: #136015; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        #furto-button {
+            background-color: #dcc6b0; /* Cor quando não está selecionado */
+        }
+
+        #furto-button.active {
+            background-color: #4b1a12; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#furto-button {
+            background-color: #4d3e33; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#furto-button.active {
+            background-color: #4b1a12; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        #perturbacao-button {
+            background-color: #efeeb2; /* Cor quando não está selecionado */
+        }
+
+        #perturbacao-button.active {
+            background-color: #c1c700; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#perturbacao-button {
+            background-color: #5a5b3a; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#perturbacao-button.active {
+            background-color: #c1c700; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        #outros-button {
+            background-color: #bedffb; /* Cor quando não está selecionado */
+        }
+
+        #outros-button.active {
+            background-color: #161bd6; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#outros-button {
+            background-color: #2e4a5b; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#outros-button.active {
+            background-color: #161bd6; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        #alarme-button {
+            background-color: #e4d1e5; /* Cor quando não está selecionado */
+        }
+
+        #alarme-button.active {
+            background-color: #46197b; /* Nova cor quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#alarme-button {
+            background-color: #4a3d4a; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#alarme-button.active {
+            background-color: #46197b; /* Nova cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+
+        .form-section.preset-section#perturbacao-preset-section {
+            background-color: #c1c700; /* Nova cor da aba Perturbação do Sossego quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section#furto-preset-section {
+            background-color: #4b1a12; /* Nova cor da aba Furto/Roubo Veículo quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section#alarme-preset-section {
+            background-color: #46197b; /* Nova cor da aba Disparo de Alarme quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#perturbacao-preset-section {
+            background-color: #c1c700; /* Nova cor adaptada para dark mode da aba Perturbação do Sossego quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#perturbacao-preset-section label {
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#furto-preset-section {
+            background-color: #4b1a12; /* Nova cor adaptada para dark mode da aba Furto/Roubo Veículo quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#furto-preset-section label {
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#alarme-preset-section {
+            background-color: #46197b; /* Nova cor adaptada para dark mode da aba Disparo de Alarme quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section#acidente-preset-section {
+            background-color: #136015; /* Nova cor da aba Acidente de Trânsito quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        .form-section.preset-section.dark-mode#acidente-preset-section {
+            background-color: #136015; /* Nova cor adaptada para dark mode da aba Acidente de Trânsito quando selecionada */
+            color: white; /* Cor da fonte invertida */
+        }
+
+        #apoio-button {
+            background-color: #d3d3d3; /* Cinza claro quando não está selecionado */
+        }
+
+        #apoio-button.active {
+            background-color: #a9a9a9; /* Cinza escuro quando está selecionado */
+            color: white;
+        }
+
+        .button-header button.dark-mode#apoio-button {
+            background-color: #5a5a5a; /* Cor adaptada para dark mode quando não está selecionado */
+        }
+
+        .button-header button.dark-mode#apoio-button.active {
+            background-color: #a9a9a9; /* Cor adaptada para dark mode quando está selecionado */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="switch">
+        <img src="https://img.icons8.com/ios-filled/50/000000/sun.png" class="sun-icon" alt="Sun">
+        <input type="checkbox" id="toggle-switch" onclick="toggleDarkMode()">
+        <label class="slider" for="toggle-switch"></label>
+        <img src="https://img.icons8.com/ios-filled/50/000000/moon-symbol.png" class="moon-icon" alt="Moon">
+    </div>
+    <div class="button-header">
+        <button id="perturbacao-button" class="active" onclick="showForm('perturbacao')">Perturbação do Sossego</button>
+        <button id="violencia-button" onclick="showForm('violencia')">Violência Doméstica</button>
+        <button id="furto-button" onclick="showForm('furto')">Furto/Roubo Veículo</button>
+        <button id="alarme-button" onclick="showForm('alarme')">Disparo de Alarme</button>
+        <button id="acidente-button" onclick="showForm('acidente')">Acidente de Trânsito</button>
+        <button id="apoio-button" onclick="showForm('apoio')">Apoio (desenvolvimento)</button>
+        <button id="outros-button" onclick="showForm('outros')">Outros</button>
+    </div>
+
+    <!-- Formulário de Perturbação do Sossego -->
+    <div id="perturbacao-form" class="form-container" style="display: block;">
+        <h1>PERTURBAÇÃO DO SOSSEGO</h1>
+
+        <div class="form-section preset-section" id="perturbacao-preset-section">
+            <label>Preset:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="perturbacao-preset" value="Casa" onclick="presetCasa()"> Casa</label>
+                <label><input type="radio" name="perturbacao-preset" value="Bar" onclick="presetBar()"> Bar</label>
+                <label><input type="radio" name="perturbacao-preset" value="Carro" onclick="presetCarro()"> Carro</label>
+                <label><input type="radio" name="perturbacao-preset" value="Motocicleta" onclick="presetMotocicleta()"> Motocicleta</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Tipo de som:</label>
+            <select id="perturbacao-tipoSom">
+                <option value="">Selecione</option>
+                <option value="som alto">Som alto</option>
+                <option value="berros e algazarra">Berros e algazarra</option>
+                <option value="veículo">Som em Veículo</option>
+                <option value="caixinha portátil">Caixa de som portátil</option>
+                <option value="instrumentos musicais">Instrumentos musicais</option>
+                <option value="motocicleta">Motocicleta acelerando</option>
+                <option value="carro">Carro acelerando</option>
+                <option value="música ao vivo">Música ao vivo</option>
+                <option value="Barulho de maquinário">Barulho de maquinário</option>
+                <option value="Latido de Cão">Latido de Cão</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label>Origem do ruído:</label>
+            <select id="perturbacao-local">
+                <option value="">Selecione</option>
+                <option value="Residência">Residência</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Estabelecimento comercial">Estabelecimento comercial</option>
+                <option value="Via Pública">Via Pública</option>
+                <option value="Construção">Construção</option>
+                <option value="Imóvel em obra">Imóvel em obra</option>
+                <option value="Igreja">Igreja</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label>Quantidade de pessoas:</label>
+            <input type="number" id="perturbacao-quantidade" min="0">
+            <label><input type="checkbox" id="perturbacao-naoSabe"> Não sabe informar</label>
+        </div>
+
+        <div class="form-section">
+            <label>Deseja contato?</label>
+            <div>
+                <label><input type="radio" name="perturbacao-contato" value="sim"> Sim</label>
+                <label><input type="radio" name="perturbacao-contato" value="nao"> Não</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Sofrimento:</label>
+            <select id="perturbacao-dorSofrimento">
+                <option value="">Nenhum</option>
+                <option value="Filho autista">Filho autista</option>
+                <option value="Filhos">Filhos</option>
+                <option value="Filho recém nascido">Filho recém nascido</option>
+                <option value="Solicitante se recuperando de doença">Solicitante se recuperando de doença</option>
+                <option value="Solicitante se recuperando de cirurgia">Solicitante se recuperando de cirurgia</option>
+                <option value="Parente se recuperando de doença">Parente se recuperando de doença</option>
+                <option value="Parente se recuperando de cirurgia">Parente se recuperando de cirurgia</option>
+                <option value="Parentes idosos">Parentes idosos</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <div>
+                <label><input type="checkbox" id="perturbacao-anonimoRepresalia"> Anônimo represália</label><br>
+                <label><input type="checkbox" id="perturbacao-anonimoIndisposicao"> Anônimo indisposição</label><br>
+                <label><input type="checkbox" id="perturbacao-ruidoAudivel"> Ruído audível</label><br>
+                <label><input type="checkbox" id="perturbacao-entorpecente"> Entorpecente</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Violência Doméstica -->
+    <div id="violencia-form" class="form-container">
+        <h1>VIOLÊNCIA DOMÉSTICA</h1>
+
+        <div class="form-section">
+            <label class="bold-label">Denunciante</label>
+            <select id="violencia-denunciante">
+                <option value="">Selecione</option>
+                <option value="VITIMA">Vítima</option>
+                <option value="VIZINHO">Vizinho</option>
+                <option value="PARENTE">Parente</option>
+                <option value="AMIGO">Amiga(o)</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label class="bold-label">Agressor</label>
+            <select id="violencia-agressor">
+                <option value="">Selecione</option>
+                <option value="MARIDO">Marido</option>
+                <option value="NAMORADO">Namorado</option>
+                <option value="COMPANHEIRO">Companheiro</option>
+                <option value="EX-MARIDO">Ex-marido</option>
+                <option value="EX-NAMORADO">Ex-namorado</option>
+                <option value="GENITOR">Genitor</option>
+                <option value="IRMAO">Irmão</option>
+                <option value="TIO">Tio</option>
+                <option value="PRIMO">Primo</option>
+                <option value="SOBRINHO">Sobrinho</option>
+                <option value="NETO">Neto</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label class="bold-label">Local</label>
+            <select id="violencia-local">
+                <option value="">Selecione</option>
+                <option value="RESIDENCIA">Residência</option>
+                <option value="APARTAMENTO">Apartamento</option>
+                <option value="ESTABELECIMENTO">Estabelecimento</option>
+                <option value="VIA_PUBLICA">Via Pública</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label class="bold-label">Está portando arma?</label>
+            <select id="violencia-arma">
+                <option value="">Selecione</option>
+                <option value="FACA">Faca</option>
+                <option value="FACAO">Facão</option>
+                <option value="ARMA_FOGO">Arma de fogo</option>
+                <option value="MADEIRA">Pedaço de madeira</option>
+                <option value="FERRO">Barra de ferro</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label class="bold-label">Onde está o agressor?</label>
+            <div>
+                <label><input type="radio" name="violencia-localAgressor" value="local"> No local</label>
+                <label><input type="radio" name="violencia-localAgressor" value="proximidades"> Nas proximidades</label>
+                <label><input type="radio" name="violencia-localAgressor" value="saiu"> Acaba de sair</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div>
+                <label><input type="checkbox" id="violencia-quebrandoPertences"> Quebrando pertences</label><br>
+                <label><input type="checkbox" id="violencia-quebrandoVeiculo"> Quebrando veículo</label><br>
+                <label><input type="checkbox" id="violencia-ameacandoFogo"> Ameaçando atear fogo</label><br>
+                <label><input type="checkbox" id="violencia-medidaProtetiva"> Possui medida protetiva</label><br>
+                <label><input type="checkbox" id="violencia-abrigada"> Está abrigada</label>
+                <input type="text" id="violencia-abrigoInfo" placeholder="Local do abrigo" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário de Furto/Roubo de Veículo -->
+    <div id="furto-form" class="form-container">
+        <h1>FURTO OU ROUBO DE VEÍCULO</h1>
+
+        <div class="form-section preset-section" id="furto-preset-section">
+            <label>Preset:</label>
+            <!-- Adicione opções de preset aqui -->
+            <label><input type="radio" name="furto-preset" value="furto-carro" id="furto-predefinido"> Furto/Carro</label>
+            <label><input type="radio" name="furto-preset" value="furto-moto" onclick="presetFurtoMoto()"> Furto/Moto</label>
+            <label><input type="radio" name="furto-preset" value="roubo-carro" onclick="presetRouboCarro()"> Roubo/Carro</label>
+        </div>
+
+        <div class="form-section">
+            <label>Furto ou Roubo?</label>
+            <div class="inline-group">
+                <label><input type="radio" name="furto-tipo" value="Furto" id="furto-furto"> Furto</label>
+                <label><input type="radio" name="furto-tipo" value="Roubo" id="furto-roubo"> Roubo</label>
+                <div class="assaltantes-input">
+                    <input type="number" id="furto-qtdAssaltantes" min="1" placeholder="Qtd assaltantes">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Tipo de veículo:</label>
+            <select id="furto-tipoVeiculo">
+                <option value="">Selecione</option>
+                <option value="O SEU CARRO">Carro</option>
+                <option value="A SUA MOTOCICLETA">Motocicleta</option>
+                <option value="O SEU CAMINHÃO">Caminhão</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label>Localização do veículo:</label>
+            <select id="furto-localVeiculo">
+                <option value="">Selecione</option>
+                <option value="NA VIA">Via</option>
+                <option value="NA RESIDÊNCIA">Residência</option>
+                <option value="NO ESTACIONAMENTO">Estacionamento</option>
+                <option value="NO ESTACIONAMENTO DO ESTABELECIMENTO">Estab. comercial</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <label>Rastreador:</label>
+            <div class="inline-group">
+                <label><input type="radio" name="furto-rastreador" value="SIM"> Sim</label>
+                <label><input type="radio" name="furto-rastreador" value="NÃO"> Não</label>
+                <label><input type="radio" name="furto-rastreador" value="NÃO SABE"> Não Sabe</label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label>Não recorda a placa:</label>
+            <input type="text" id="furto-detalhesVeiculo" placeholder="Marca, modelo, cor e ano">
+        </div>
+
+        <div class="form-section">
+            <label>Atendimento:</label>
+            <select id="furto-atendimento">
+                <option value="">Selecione</option>
+                <option value="AGUARDA ATENDIMENTO">Aguarda atendimento</option>
+                <option value="NÃO AGUARDA ATENDIMENTO">Não aguarda</option>
+                <option value="SOLICITANTE NÃO ESTA MAIS NO LOCAL E NÃO AGUARDA ATENDIMENTO">Não está no local</option>
+            </select>
+        </div>
+
+        <div class="form-section">
+            <div>
+                <label><input type="checkbox" id="furto-alertaTemporario"> Alerta Temporário Registrado</label><br>
+                <label><input type="checkbox" id="furto-boDelegacia"> Orientado a Registra BO</label><br>
+                <label><input type="checkbox" id="furto-repasseRede"> Pede Repasse a Rede</label><br>
+                <label><input type="checkbox" id="furto-detalhesVeiculoCheckbox"> Dados do Veículo</label><br>
+            </div>
+        </div>
+    </div>
+
+<!-- Formulário de disparo de alarme -->
+<div id="alarme-form" class="form-container">
+    <h1>DISPARO DE ALARME</h1>
+
+    <div class="form-section preset-section" id="alarme-preset-section">
+        <label>Preset:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="alarme-preset" value="Verisure" onclick="presetVerisure()"> Verisure</label>
+            <label><input type="radio" name="alarme-preset" value="Bancos" onclick="presetBancos()"> Bancos</label>
+            <label><input type="radio" name="alarme-preset" value="Tecban" onclick="presetTecban()"> Tecban</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Tipo de Alarme:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" id="alarme-intrusao" value="INTRUSÃO"> Intrusão</label>
+            <label><input type="checkbox" id="alarme-panico" value="PÂNICO"> Pânico</label>
+            <label><input type="checkbox" id="alarme-queda-sinal" value="QUEDA DE SINAL"> Queda de Sinal</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Local:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="alarme-local" value="NA RESIDÊNCIA"> Residência</label>
+            <label><input type="radio" name="alarme-local" value="NO ESTABELECIMENTO"> Estabelecimento</label>
+            <label><input type="radio" name="alarme-local" value="NO CAIXA ELETRÔNICO DO ESTABELECIMENTO"> Caixa Eletrônico</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Possui imagens?</label>
+        <div class="radio-group">
+            <label><input type="radio" name="alarme-imagens" value="POSSUI IMAGENS DE CÂMERA DE SEGURANÇA."> Sim</label>
+            <label><input type="radio" name="alarme-imagens" value="NÃO POSSUI IMAGENS DE CÂMERA DE SEGURANÇA."> Não</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Equipe Tática:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="alarme-tatica" value="sim"> Sim</label>
+            <label><input type="radio" name="alarme-tatica" value="nao"> Não</label>
+        </div>
+        <input type="text" id="alarme-empresa" placeholder="Nome da empresa tática" class="hidden">
+    </div>
+
+    <div class="form-section">
+        <label>Contato Telefônico:</label>
+        <div class="contact-fields">
+            <input type="text" id="alarme-contato-nome" placeholder="Nome">
+            <input type="tel" id="alarme-contato-telefone" placeholder="Telefone">
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div>
+            <label><input type="checkbox" id="alarme-fumaca"> Emissor de fumaça acionado</label><br>
+            <label><input type="checkbox" id="alarme-nao-informar-contato"> Não pode informar contato telefônico</label>
+        </div>
+    </div>
+</div>
+
+<!-- Formulário de Acidente de Trânsito -->
+<div id="acidente-form" class="form-container">
+    <h1>ACIDENTE DE TRÂNSITO</h1>
+
+    <div class="form-section preset-section" id="acidente-preset-section">
+        <label>Preset:</label>
+        <div class="radio-group">
+            <label><input type="radio" name="acidente-preset" value="auto-auto"> AUTO X AUTO</label>
+            <label><input type="radio" name="acidente-preset" value="auto-moto"> AUTO X MOTO</label>
+            <label><input type="radio" name="acidente-preset" value="auto-auto-embriagues"> AUTO X AUTO/EMBRIAGUEZ</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Pessoa Ferida:</label>
+        <div>
+            <label><input type="radio" name="acidente-feridos" value="sim"> Sim</label>
+            <label><input type="radio" name="acidente-feridos" value="nao"> Não</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Acidente envolvendo:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="acidente-veiculo" value="CAMINHÃO"> Caminhão</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="ÔNIBUS"> Ônibus</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="VAN"> Van</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="AUTO"> Carro</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="MOTO"> Motocicleta</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="BICICLETA"> Bicicleta</label>
+            <label><input type="checkbox" name="acidente-veiculo" value="ANTEPARO"> Anteparo</label>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <label>Tipo de Acidente:</label>
+        <select id="acidente-tipo" onchange="atualizarOpcoesDetalhadas()">
+            <option value="">Selecione</option>
+            <option value="Colisão">Colisão</option>
+            <option value="Atropelamento">Atropelamento</option>
+            <option value="Capotamento">Capotamento</option>
+            <option value="Queda de moto">Queda de moto</option>
+        </select>
+        <select id="acidente-detalhes" style="display: none; margin-left: 10px;">
+            <!-- Opções serão preenchidas dinamicamente -->
+        </select>
+    </div>
+
+    <div class="form-section">
+        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+            <label><input type="checkbox" id="acidente-condutorEmbriagado"> Condutor Embriagado</label>
+            <label><input type="checkbox" id="acidente-condutorDeixouLocal"> Condutor deixou o local/abandonou o veículo</label>
+            <label><input type="checkbox" id="acidente-socorroMedico"> Solicitante já acionou Socorro Médico</label>
+            <label><input type="checkbox" id="acidente-orientadoAcionarAmbulancia"> Solicitante orientado a acionar uma ambulância</label>
+            <label><input type="checkbox" id="acidente-transferidaSiate"> Ligação transferida para o SIATE</label>
+            <label><input type="checkbox" id="acidente-aguardaAtendimento"> Aguarda Atendimento no local</label>
+            <label><input type="checkbox" id="acidente-presencaPolicial"> Pede presença policial</label>
+            <label style="display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="acidente-placaVeiculos"> Placa dos veículos envolvidos
+                <input type="text" id="acidente-placaVeiculosTexto" placeholder="Placas" style="opacity: 0.5; margin-left: 10px;">
+            </label>
+        </div>
+    </div>
+</div>
+
+    <!-- Formulário de Apoio -->
+    <div id="apoio-form" class="form-container" style="display: none;">
+        <h1>APOIO</h1>
+        <!-- Conteúdo da aba ainda em branco -->
+    </div>
+
+    <!-- Formulário de Outros -->
+    <div id="outros-form" class="form-container">
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'oficial-justica')">
+            <div class="icone-texto">Oficial de justiça</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'oficial-justica-lazy')">
+            <div class="icone-texto">Oficial de Justiça Lazy</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'pai-visita')">
+            <div class="icone-texto">Pai direito de visita</div>
+        </div>
+        
+        <!-- Adicione os demais ícones seguindo o mesmo padrão -->
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'Furto a Residência')">
+            <div class="icone-texto">Furto a Residência</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'furto-veiculo-a')">
+            <div class="icone-texto">Furto de Veículo A</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-1')">
+            <div class="icone-texto">Next 1</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-2')">
+            <div class="icone-texto">Next 2</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-3')">
+            <div class="icone-texto">Next 3</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-4')">
+            <div class="icone-texto">Next 4</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-5')">
+            <div class="icone-texto">Next 5</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-6')">
+            <div class="icone-texto">Next 6</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'next-7')">
+            <div class="icone-texto">Next 7</div>
+        </div>
+        
+        <div class="icone-opcao" onclick="selecionarIconeOutros(this, 'estagio')">
+            <div class="icone-texto">Estágio</div>
+            <div class="input-container hidden">
+                <input type="text" id="estagio-nome" placeholder="Nome">
+                <input type="text" id="estagio-cpf" placeholder="CPF">
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultado Fixo -->
+    <div class="fixed-result-container">
+        <div class="result-box" id="resultado"></div>
+        <div class="button-group">
+            <button onclick="copiarTexto()">📋 Copiar</button>
+            <button onclick="limparTudo()">🗑️ Limpar</button>
+        </div>
+    </div>
+
+    <script>
+        let activeForm = 'perturbacao';
+
+        // Controle de exibição
+        function showForm(formName) {
+            document.querySelectorAll('.button-header button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.form-container').forEach(form => form.style.display = 'none');
+            
+            document.getElementById(`${formName}-button`).classList.add('active');
+            document.getElementById(`${formName}-form`).style.display = 'block';
+            activeForm = formName;
+            atualizarTextoAtivo();
+        }
+
+        // Atualização de texto
+        function atualizarTextoAtivo() {
+            const updaters = {
+                perturbacao: atualizarTextoPerturbacao,
+                violencia: atualizarTextoViolencia,
+                furto: atualizarTextoFurto,
+                alarme: atualizarTextoAlarme,
+                acidente: atualizarTextoAcidente,
+                outros: atualizarTextoOutros,
+                apoio: atualizarTextoApoio
+            };
+            if(updaters[activeForm]) updaters[activeForm]();
+        }
+
+        // Funções para Perturbação do Sossego
+        function atualizarTextoPerturbacao() {
+    const tipoSomMap = {
+        'som alto': 'SOM EM ALTÍSSIMO VOLUME',
+        'caixinha portátil': 'SOM EM ALTÍSSIMO VOLUME DE CAIXA DE SOM PORTÁTIL',
+        'veículo': 'SOM EM ALTÍSSIMO VOLUME DE VEICULO',
+        'motocicleta': 'BARULHO EXCESSIVAMENTE ALTO DE CONDUTOR ACELERANDO UMA MOTOCICLETA',
+        'carro': 'BARULHO EXCESSIVAMENTE ALTO DE CONDUTOR ACELERANDO UM VEÍCULO',
+        'instrumentos musicais': 'BARULHO EXTREMAMENTE ALTO DE INSTRUMENTOS MUSICAIS',
+        'Barulho de maquinário': 'BARULHO DE MAQUINÁRIO E FERRAMENTAS',
+        'Latido de Cão': 'BARULHO EXCESSIVAMENTE ALTO DE LATIDO DE CÃO'
+    };
+
+    const localMap = {
+        'Residência': 'EM RESIDÊNCIA',
+        'Apartamento': 'EM APARTAMENTO',
+        'Estabelecimento comercial': 'EM UM ESTABELECIMENTO',
+        'Via Pública': 'NA VIA',
+        'Construção': 'EM UMA CONSTRUÇÃO',
+        'Imóvel em obra': 'EM OBRA DE IMÓVEL',
+        'Igreja': 'EM UMA IGREJA'
+    };
+
+    const dorSofrimentoMap = {
+        'Filho autista': 'AO SEU FILHO AUTISTA',
+        'Filhos': 'AOS SEUS FILHOS',
+        'Filho recém nascido': 'AO SEU FILHO RECÉM NASCIDO',
+        'Solicitante se recuperando de doença': 'AO SOLICITANTE QUE ESTA SE RECUPERANDO DE DOENÇA',
+        'Solicitante se recuperando de cirurgia': 'AO SOLICITANTE QUE ESTA SE RECUPERANDO DE UMA CIRURGIA',
+        'Parente se recuperando de doença': 'A PARENTE DO SOLICITANTE QUE ESTA SE RECUPERANDO DE DOENÇA',
+        'Parente se recuperando de cirurgia': 'A PARENTE DO SOLICITANTE QUE ESTA SE RECUPERANDO DE CIRURGIA',
+        'Parentes idosos': 'AOS SEUS PARENTES IDOSOS'
+    };
+
+    const getValue = id => document.getElementById(`perturbacao-${id}`).value;
+    const isChecked = id => document.getElementById(`perturbacao-${id}`).checked;
+
+    let tipoSom = getValue('tipoSom');
+    tipoSom = tipoSomMap[tipoSom] || tipoSom.toUpperCase();
+
+    let local = getValue('local');
+    local = localMap[local] || local.toUpperCase();
+
+    const quantidade = getValue('quantidade');
+    const naoSabe = isChecked('naoSabe');
+    const contato = document.querySelector('input[name="perturbacao-contato"]:checked')?.value;
+    const dorSofrimento = getValue('dorSofrimento');
+    const anonimoRepresalia = isChecked('anonimoRepresalia');
+    const anonimoIndisposicao = isChecked('anonimoIndisposicao');
+    const ruidoAudivel = isChecked('ruidoAudivel');
+    const entorpecente = isChecked('entorpecente');
+
+    let texto = '';
+    const infoParts = [];
+    if (tipoSom) infoParts.push(tipoSom);
+    if (local) infoParts.push(local);
+    
+    if (infoParts.length > 0) {
+        texto += `SOLICITANTE INFORMA ${infoParts.join(' ')} LHE PERTURBANDO O SOSSEGO. `;
+    }
+
+    if (naoSabe) {
+        texto += 'NÃO SABE INFORMAR A QUANTIDADE DE PESSOAS NO LOCAL. ';
+    } else if (quantidade) {
+        texto += quantidade == 1 ? 'SOMENTE 1 PESSOA NO LOCAL. ' : `CERCA DE ${quantidade} PESSOAS NO LOCAL. `;
+    }
+
+    if (contato) {
+        texto += contato === 'sim' ? 'AGUARDA CONTATO COM A EQUIPE POLICIAL.' 
+                                  : 'NÃO AGUARDA CONTATO COM A EQUIPE POLICIAL. PEDE PROVIDÊNCIAS.';
+    }
+
+    const textosAdicionais = [];
+    
+    if (dorSofrimento) {
+        textosAdicionais.push(`RELATA QUE A PERTURBAÇÃO DO SOSSEGO ESTA CAUSANDO SOFRIMENTO ${dorSofrimentoMap[dorSofrimento]}.`);
+    }
+
+    if (anonimoRepresalia) {
+        textosAdicionais.push('SOLICITANTE DESEJA PERMANECER ANÔNIMO POR TEMER REPRESÁLIA.');
+    }
+
+    if (anonimoIndisposicao) {
+        textosAdicionais.push('SOLICITANTE DESEJA PERMANECER ANÔNIMO POR TEMER SE INDISPOR COM A SUA VIZINHANÇA.');
+    }
+
+    if (ruidoAudivel) {
+        textosAdicionais.push('RUÍDO AUDÍVEL NO MOMENTO DO ATENDIMENTO.');
+    }
+
+    if (entorpecente) {
+        textosAdicionais.push('RELATA CONSUMO DE ENTORPECENTE NO LOCAL.');
+    }
+
+    if (textosAdicionais.length > 0) {
+        texto += '\n\n' + textosAdicionais.join('\n\n');
+    }
+
+    document.getElementById('resultado').textContent = texto;
+}
+
+        function presetCasa() {
+            document.getElementById('perturbacao-tipoSom').value = 'som alto';
+            document.getElementById('perturbacao-local').value = 'Residência';
+            document.getElementById('perturbacao-quantidade').value = '';
+            document.getElementById('perturbacao-naoSabe').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="nao"]').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="sim"]').checked = false;
+            document.getElementById('perturbacao-dorSofrimento').value = '';
+            document.getElementById('perturbacao-anonimoRepresalia').checked = false;
+            document.getElementById('perturbacao-anonimoIndisposicao').checked = false;
+            document.getElementById('perturbacao-ruidoAudivel').checked = false;
+            document.getElementById('perturbacao-entorpecente').checked = false;
+            atualizarTextoPerturbacao();
+        }
+
+        function presetBar() {
+            document.getElementById('perturbacao-tipoSom').value = 'som alto';
+            document.getElementById('perturbacao-local').value = 'Estabelecimento comercial';
+            document.getElementById('perturbacao-quantidade').value = '';
+            document.getElementById('perturbacao-naoSabe').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="nao"]').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="sim"]').checked = false;
+            document.getElementById('perturbacao-dorSofrimento').value = '';
+            document.getElementById('perturbacao-anonimoRepresalia').checked = false;
+            document.getElementById('perturbacao-anonimoIndisposicao').checked = false;
+            document.getElementById('perturbacao-ruidoAudivel').checked = false;
+            document.getElementById('perturbacao-entorpecente').checked = false;
+            atualizarTextoPerturbacao();
+        }
+
+        function presetCarro() {
+            document.getElementById('perturbacao-tipoSom').value = 'veículo';
+            document.getElementById('perturbacao-local').value = 'Via Pública';
+            document.getElementById('perturbacao-quantidade').value = '';
+            document.getElementById('perturbacao-naoSabe').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="nao"]').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="sim"]').checked = false;
+            document.getElementById('perturbacao-dorSofrimento').value = '';
+            document.getElementById('perturbacao-anonimoRepresalia').checked = false;
+            document.getElementById('perturbacao-anonimoIndisposicao').checked = false;
+            document.getElementById('perturbacao-ruidoAudivel').checked = false;
+            document.getElementById('perturbacao-entorpecente').checked = false;
+            atualizarTextoPerturbacao();
+        }
+
+        function presetMotocicleta() {
+            document.getElementById('perturbacao-tipoSom').value = 'motocicleta';
+            document.getElementById('perturbacao-local').value = 'Via Pública';
+            document.getElementById('perturbacao-quantidade').value = ''; // Limpa a quantidade de pessoas
+            document.getElementById('perturbacao-naoSabe').checked = false; // Desmarca a checkbox "Não sabe informar"
+            document.querySelector('input[name="perturbacao-contato"][value="nao"]').checked = true;
+            document.querySelector('input[name="perturbacao-contato"][value="sim"]').checked = false;
+            document.getElementById('perturbacao-dorSofrimento').value = '';
+            document.getElementById('perturbacao-anonimoRepresalia').checked = false;
+            document.getElementById('perturbacao-anonimoIndisposicao').checked = false;
+            document.getElementById('perturbacao-ruidoAudivel').checked = false;
+            document.getElementById('perturbacao-entorpecente').checked = false;
+            atualizarTextoPerturbacao();
+        }
+
+        // Funções para Violência Doméstica
+        function atualizarTextoViolencia() {
+            const getValue = id => document.getElementById(`violencia-${id}`).value;
+            const isChecked = id => document.getElementById(`violencia-${id}`).checked;
+
+            const denunciante = getValue('denunciante');
+            const agressor = getValue('agressor');
+            const local = getValue('local');
+            const arma = getValue('arma');
+            const localAgressor = document.querySelector('input[name="violencia-localAgressor"]:checked')?.value;
+            
+            let partes = [];
+            
+            if(denunciante && agressor && local) {
+                let inicio = '';
+                switch(denunciante) {
+                    case 'VITIMA': 
+                        inicio = 'SOLICITANTE INFORMA QUE ESTA SENDO AGREDIDA PELO SEU'; 
+                        break;
+                    case 'VIZINHO': 
+                        inicio = 'SOLICITANTE INFORMA QUE A MORADORA ESTA SENDO AGREDIDA PELO SEU'; 
+                        break;
+                    case 'PARENTE': 
+                        inicio = 'SOLICITANTE INFORMA QUE UMA PARENTE ESTA SENDO AGREDIDA PELO SEU'; 
+                        break;
+                    case 'AMIGO': 
+                        inicio = 'SOLICITANTE INFORMA QUE SUA AMIGA ESTA SENDO AGREDIDA PELO'; 
+                        break;
+                }
+                partes.push(`${inicio} ${agressor} ${formatarLocalViolencia(local)}`);
+            }
+
+            if(arma) partes.push(formatarArmaViolencia(arma));
+            if(localAgressor) {
+                const localAgressorMap = {
+                    'local': 'AGRESSOR ESTA NO LOCAL.',
+                    'proximidades': 'AGRESSOR ESTA NAS PROXIMIDADES.',
+                    'saiu': 'AGRESSOR ACABA DE SAIR DO LOCAL.'
+                };
+                partes.push(localAgressorMap[localAgressor]);
+            }
+            
+            if(isChecked('quebrandoPertences')) partes.push(`INDIVÍDUO ESTA QUEBRANDO PERTENCES ${formatarLocalViolencia(local)}`);
+            if(isChecked('quebrandoVeiculo')) partes.push('RELATA QUE INDIVÍDUO ESTA QUEBRANDO UM VEICULO NO LOCAL');
+            if(isChecked('ameacandoFogo')) partes.push(`INDIVÍDUO ESTA AMEAÇANDO ATEAR FOGO ${formatarLocalViolencia(local)}`);
+            
+            if(isChecked('medidaProtetiva')) {
+                partes.push(denunciante === 'VITIMA' 
+                    ? 'INFORMA QUE POSSUI MEDIDA PROTETIVA CONTRA O AGRESSOR' 
+                    : 'INFORMA QUE A VÍTIMA POSSUI MEDIDA PROTETIVA CONTRA O AGRESSOR');
+            }
+
+            if(isChecked('abrigada')) {
+                const abrigo = document.getElementById('violencia-abrigoInfo').value;
+                partes.push(abrigo 
+                    ? `INFORMA QUE VITIMA ESTA ABRIGADA EM ${abrigo.toUpperCase()}`
+                    : 'INFORMA QUE VITIMA ESTA ABRIGADA EM SUA RESIDENCIA');
+            }
+
+            let texto = partes.join('. ');
+            if(texto) {
+                texto += denunciante === 'VITIMA' ? ' AGUARDA ATENDIMENTO NO LOCAL.' : ' PEDE PRESENÇA POLICIAL.';
+            }
+            document.getElementById('resultado').textContent = texto;
+        }
+
+        function formatarLocalViolencia(local) {
+            const locais = {
+                'RESIDENCIA': 'NA RESIDÊNCIA',
+                'APARTAMENTO': 'NO APARTAMENTO',
+                'ESTABELECIMENTO': 'NO ESTABELECIMENTO',
+                'VIA_PUBLICA': 'NA VIA'
+            };
+            return locais[local] || '';
+        }
+
+        function formatarArmaViolencia(arma) {
+            const armas = {
+                'FACA': 'AGRESSOR ESTA PORTANDO UMA FACA',
+                'FACAO': 'AGRESSOR ESTA PORTANDO UM FACÃO',
+                'ARMA_FOGO': 'AGRESSOR ESTA PORTANDO UMA ARMA DE FOGO',
+                'MADEIRA': 'AGRESSOR ESTA PORTANDO UM PEDAÇO DE MADEIRA',
+                'FERRO': 'AGRESSOR ESTA PORTANDO UMA BARRA DE FERRO'
+            };
+            return armas[arma] || '';
+        }
+
+        // Funções para Furto/Roubo
+        function atualizarTextoFurto() {
+    const getValue = id => document.getElementById(`furto-${id}`).value;
+    const isChecked = id => document.getElementById(`furto-${id}`).checked;
+    const getRadioValue = name => document.querySelector(`input[name="furto-${name}"]:checked`)?.value;
+
+    const tipo = getRadioValue('tipo');
+    const veiculo = getValue('tipoVeiculo');
+    const local = getValue('localVeiculo');
+    const rastreador = getRadioValue('rastreador');
+    const detalhes = getValue('detalhesVeiculo');
+    const alerta = isChecked('alertaTemporario');
+    const boDelegacia = isChecked('boDelegacia');
+    const repasse = isChecked('repasseRede');
+    const detalhesVeiculoCheckbox = isChecked('detalhesVeiculoCheckbox');
+    const atendimento = getValue('atendimento');
+    const qtd = getValue('qtdAssaltantes');
+
+    let texto = '';
+    let textoAdicional = '';
+    let textoDetalhes = '';
+    
+    if (tipo === 'Furto') {
+        const artigo = veiculo === 'A SUA MOTOCICLETA' ? 'A MESMA' : 'O MESMO';
+        const estacionado = veiculo === 'A SUA MOTOCICLETA' ? 'ESTACIONADA' : 'ESTACIONADO';
+        texto = `SOLICITANTE DEIXOU ${veiculo} ${estacionado} ${local} E, AO RETORNAR, ${artigo} NÃO SE ENCONTRAVA MAIS NO LOCAL.`;
+    } else if (tipo === 'Roubo') {
+        const plural = qtd > 1 ? 'INDIVÍDUOS' : 'INDIVÍDUO';
+        const verbo = qtd > 1 ? 'SUBTRAÍRAM' : 'SUBTRAIU';
+        texto = `INFORMA QUE FOI TOMADO EM ASSALTO POR ${qtd} ${plural} QUE LHE ${verbo} ${veiculo}.`;
+    }
+
+    if (rastreador) {
+        texto += rastreador === 'SIM' ? ' VEICULO POSSUI RASTREADOR.' :
+                 rastreador === 'NÃO' ? ' VEICULO NÃO POSSUI RASTREADOR.' :
+                 ' NÃO TEM CONHECIMENTO SE O VEICULO POSSUI RASTREADOR.';
+    }
+    
+    texto += '\n\n';
+
+    if (detalhes) textoAdicional += `LEVADO O VEICULO ${detalhes.toUpperCase()}, SOLICITANTE NÃO RECORDA A PLACA E IRÁ RETORNAR COM A INFORMAÇÃO PARA REGISTRAR O ALERTA TEMPORÁRIO. `;
+    if (alerta) textoAdicional += `O ALERTA TEMPORÁRIO FOI REGISTRADO. `;
+    if (boDelegacia) textoAdicional += `SOLICITANTE FOI ORIENTADO A REGISTRAR UM BOLETIM DE OCORRÊNCIA E O ALERTA PERMANENTE DO VEÍCULO NA DELEGACIA. `;
+    if (atendimento) textoAdicional += `${atendimento}. `;
+    if (repasse) textoAdicional += `PEDE REPASSE A REDE.`;
+
+    if (detalhesVeiculoCheckbox) {
+        let tipoVeiculoTexto = '';
+        if (veiculo === 'O SEU CARRO') {
+            tipoVeiculoTexto = 'VEÍCULO:';
+        } else if (veiculo === 'A SUA MOTOCICLETA') {
+            tipoVeiculoTexto = 'MOTOCICLETA:';
+        } else if (veiculo === 'O SEU CAMINHÃO') {
+            tipoVeiculoTexto = 'CAMINHÃO:';
+        }
+        textoDetalhes += `\n\n${tipoVeiculoTexto}\nCOR:\nPLACA:\nANO/MODELO:\nDETALHES:\n`;
+    }
+
+    document.getElementById('resultado').textContent = texto + textoAdicional.trim() + textoDetalhes;
+}
+
+        function presetFurtoMoto() {
+            document.getElementById('furto-furto').checked = true;
+            document.getElementById('furto-roubo').checked = false;
+            document.getElementById('furto-tipoVeiculo').value = 'A SUA MOTOCICLETA';
+            document.getElementById('furto-localVeiculo').value = 'NA VIA';
+            document.querySelector('input[name="furto-rastreador"][value="NÃO"]').checked = true;
+            document.querySelector('input[name="furto-rastreador"][value="SIM"]').checked = false;
+            document.querySelector('input[name="furto-rastreador"][value="NÃO SABE"]').checked = false;
+            document.getElementById('furto-alertaTemporario').checked = true;
+            document.getElementById('furto-boDelegacia').checked = true;
+            document.getElementById('furto-repasseRede').checked = true;
+            document.getElementById('furto-atendimento').value = 'NÃO AGUARDA ATENDIMENTO';
+            document.getElementById('furto-detalhesVeiculo').value = '';
+            document.getElementById('furto-detalhesVeiculoCheckbox').checked = true;
+            document.querySelector('#furto-form .assaltantes-input').style.display = 'none';
+            atualizarTextoFurto();
+        }
+
+        function presetRouboCarro() {
+            document.getElementById('furto-furto').checked = false;
+            document.getElementById('furto-roubo').checked = true;
+            document.getElementById('furto-tipoVeiculo').value = 'O SEU CARRO';
+            document.getElementById('furto-localVeiculo').value = 'NA VIA';
+            document.querySelector('input[name="furto-rastreador"][value="NÃO"]').checked = true;
+            document.querySelector('input[name="furto-rastreador"][value="SIM"]').checked = false;
+            document.querySelector('input[name="furto-rastreador"][value="NÃO SABE"]').checked = false;
+            document.getElementById('furto-alertaTemporario').checked = true;
+            document.getElementById('furto-boDelegacia').checked = false;
+            document.getElementById('furto-repasseRede').checked = false;
+            document.getElementById('furto-atendimento').value = 'AGUARDA ATENDIMENTO';
+            document.getElementById('furto-detalhesVeiculo').value = '';
+            document.getElementById('furto-detalhesVeiculoCheckbox').checked = true;
+            document.querySelector('#furto-form .assaltantes-input').style.display = 'inline-block';
+            atualizarTextoFurto();
+        }
+
+	// Funções Alarme
+function showForm(formName) {
+    document.querySelectorAll('.button-header button').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.form-container').forEach(form => form.style.display = 'none');
+    
+    document.getElementById(`${formName}-button`).classList.add('active');
+    document.getElementById(`${formName}-form`).style.display = 'block';
+    activeForm = formName;
+    atualizarTextoAtivo();
+}
+
+// Atualize a função atualizarTextoAtivo
+function atualizarTextoAtivo() {
+    const updaters = {
+        perturbacao: atualizarTextoPerturbacao,
+        violencia: atualizarTextoViolencia,
+        furto: atualizarTextoFurto,
+        alarme: atualizarTextoAlarme,
+        acidente: atualizarTextoAcidente,
+        outros: atualizarTextoOutros,
+        apoio: atualizarTextoApoio
+    };
+    if(updaters[activeForm]) updaters[activeForm]();
+}
+
+// Funções para Disparo de Alarme
+function atualizarTextoAlarme() {
+    const getValue = id => document.getElementById(id).value;
+    const isChecked = id => document.getElementById(id).checked;
+    const getRadioValue = name => document.querySelector(`input[name="${name}"]:checked`)?.value;
+
+    let output = "";
+    
+    // Tipos de alarme
+    const alarmTypes = [];
+    if(isChecked('alarme-intrusao')) alarmTypes.push("INTRUSÃO");
+    if(isChecked('alarme-panico')) alarmTypes.push("PÂNICO");
+    if(isChecked('alarme-queda-sinal')) alarmTypes.push("QUEDA DE SINAL");
+    
+    if (alarmTypes.length > 0) {
+        output += "INFORMA DISPARO DE ALARME DE " + alarmTypes.join(' SEGUIDO DE ');
+    }
+    
+    // Local
+    const local = getRadioValue('alarme-local');
+    if(local) output += ` ${local}`;
+    
+    // Imagens
+    const images = getRadioValue('alarme-imagens');
+    if(images) output += `. ${images}`;
+    
+    // Equipe Tática
+    const tatica = getRadioValue('alarme-tatica');
+    if(tatica) {
+        if(tatica === 'sim') {
+            const empresa = getValue('alarme-empresa');
+            output += empresa ? `. EQUIPE TÁTICA DA EMPRESA ${empresa.toUpperCase()} IRÁ DESLOCAR AO LOCAL` 
+                             : `. HAVERÁ EQUIPE TÁTICA DESLOCANDO AO LOCAL`;
+        } else {
+            output += ` NÃO HAVERÁ EQUIPE TÁTICA DESLOCANDO AO LOCAL.`;
+        }
+    }
+    
+    // Contato
+    const nome = getValue('alarme-contato-nome').toUpperCase();
+    const telefone = getValue('alarme-contato-telefone');
+    if(nome || telefone) {
+        output += `TELEFONE DE CONTATO COM O RESPONSÁVEL ${nome} ATRAVES DO TELEFONE ${telefone}.`;
+    }
+    
+    // Adicionar "PEDE PRESENÇA POLICIAL." se houver alguma entrada
+    if (alarmTypes.length > 0 || local || images || tatica || nome || telefone) {
+        output += " PEDE PRESENÇA POLICIAL.";
+    }
+    
+    // Primeiro parágrafo
+    if (output) {
+        output += "\n\n";
+    }
+    
+    // Fumaça e Não pode informar contato telefônico
+    const additionalTexts = [];
+    if(isChecked('alarme-fumaca')) {
+        additionalTexts.push(`RELATA QUE HOUVE O ACIONAMENTO DO EMISSOR DE FUMAÇA.`);
+    }
+    if(isChecked('alarme-nao-informar-contato')) {
+        additionalTexts.push(`INFORMA QUE POLÍTICA DA EMPRESA DE SEGURANÇA LHE IMPEDE DE INFORMAR O CONTATO TELEFÔNICO COM O RESPONSÁVEL PELO IMÓVEL.`);
+    }
+    
+    if (additionalTexts.length > 0) {
+        output += additionalTexts.join('\n\n');
+    }
+    
+    document.getElementById('resultado').textContent = output;
+}
+
+        function presetVerisure() {
+            document.getElementById('alarme-intrusao').checked = true;
+            document.getElementById('alarme-panico').checked = false;
+            document.getElementById('alarme-queda-sinal').checked = false;
+            
+            document.querySelector('input[name="alarme-local"][value="NA RESIDÊNCIA"]').checked = true;
+            
+            document.querySelector('input[name="alarme-imagens"][value="NÃO POSSUI IMAGENS DE CÂMERA DE SEGURANÇA."]').checked = true;
+            
+            document.querySelector('input[name="alarme-tatica"][value="nao"]').checked = true;
+            document.getElementById('alarme-empresa').value = '';
+            document.getElementById('alarme-empresa').classList.add('hidden');
+            
+            document.getElementById('alarme-contato-nome').value = '';
+            document.getElementById('alarme-contato-telefone').value = '';
+            
+            document.getElementById('alarme-fumaca').checked = false;
+            document.getElementById('alarme-nao-informar-contato').checked = true;
+            
+            atualizarTextoAlarme();
+        }
+
+        function presetBancos() {
+            document.getElementById('alarme-intrusao').checked = true;
+            document.getElementById('alarme-panico').checked = false;
+            document.getElementById('alarme-queda-sinal').checked = false;
+            
+            document.querySelector('input[name="alarme-local"][value="NO ESTABELECIMENTO"]').checked = true;
+            
+            document.querySelector('input[name="alarme-imagens"][value="NÃO POSSUI IMAGENS DE CÂMERA DE SEGURANÇA."]').checked = true;
+            
+            document.querySelector('input[name="alarme-tatica"][value="nao"]').checked = true;
+            document.getElementById('alarme-empresa').value = '';
+            document.getElementById('alarme-empresa').classList.add('hidden');
+            
+            document.getElementById('alarme-contato-nome').value = '';
+            document.getElementById('alarme-contato-telefone').value = '';
+            
+            document.getElementById('alarme-fumaca').checked = false;
+            document.getElementById('alarme-nao-informar-contato').checked = false;
+            
+            atualizarTextoAlarme();
+        }
+
+        function presetTecban() {
+            document.getElementById('alarme-intrusao').checked = true;
+            document.getElementById('alarme-panico').checked = false;
+            document.getElementById('alarme-queda-sinal').checked = false;
+            
+            document.querySelector('input[name="alarme-local"][value="NO CAIXA ELETRÔNICO DO ESTABELECIMENTO"]').checked = true;
+            
+            document.querySelector('input[name="alarme-imagens"][value="NÃO POSSUI IMAGENS DE CÂMERA DE SEGURANÇA."]').checked = true;
+            
+            document.querySelector('input[name="alarme-tatica"][value="nao"]').checked = true;
+            document.getElementById('alarme-empresa').value = '';
+            document.getElementById('alarme-empresa').classList.add('hidden');
+            
+            document.getElementById('alarme-contato-nome').value = '';
+            document.getElementById('alarme-contato-telefone').value = '';
+            
+            document.getElementById('alarme-fumaca').checked = false;
+            document.getElementById('alarme-nao-informar-contato').checked = false;
+            
+            atualizarTextoAlarme();
+        }
+
+function limparAlarme() {
+    document.querySelectorAll('#alarme-form input').forEach(input => {
+        if(input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
+    document.getElementById('alarme-empresa').classList.add('hidden');
+    document.getElementById('resultado').textContent = ''; // Limpar o texto da caixa de texto
+    atualizarTextoAlarme();
+}
+
+// Atualize a função limparTudo
+function limparTudo() {
+    const cleaners = {
+        perturbacao: limparPerturbacao,
+        violencia: limparViolencia,
+        furto: limparFurto,
+        alarme: limparAlarme,
+        acidente: limparAcidente,
+        outros: limparOutros,
+        apoio: limparApoio
+    };
+    if(cleaners[activeForm]) cleaners[activeForm]();
+    
+    if(activeForm === 'outros') {
+        document.querySelectorAll('.icone-opcao').forEach(icone => {
+            icone.classList.remove('icone-selecionado');
+        });
+        iconeSelecionadoOutros = null;
+    }
+    
+    document.getElementById('resultado').textContent = '';
+}
+
+function limparOutros() {
+    document.querySelectorAll('.icone-opcao').forEach(icone => {
+        icone.classList.remove('icone-selecionado');
+    });
+    iconeSelecionadoOutros = null;
+    document.getElementById('resultado').textContent = '';
+}
+
+// Event Listeners para Alarme
+document.querySelectorAll('#alarme-form input').forEach(input => {
+    input.addEventListener('change', () => {
+        if(input.name === 'alarme-tatica') {
+            document.getElementById('alarme-empresa').classList.toggle('hidden', input.value !== 'sim');
+        }
+        atualizarTextoAlarme();
+    });
+});
+
+document.querySelectorAll('#alarme-empresa, #alarme-contato-nome, #alarme-contato-telefone').forEach(input => {
+    input.addEventListener('input', atualizarTextoAlarme);
+});
+
+// ...existing code...
+
+// ...existing code...
+
+// ...existing code...
+
+// ...existing code...
+
+// Funções compartilhadas
+function copiarTexto() {
+    navigator.clipboard.writeText(document.getElementById('resultado').textContent);
+}
+
+// Funções de limpeza
+function limparPerturbacao() {
+    document.querySelectorAll('#perturbacao-form input, #perturbacao-form select').forEach(element => {
+        if(element.type === 'checkbox' || element.type === 'radio') {
+            element.checked = false;
+        } else {
+            element.value = '';
+        }
+    });
+    atualizarTextoPerturbacao();
+}
+
+function limparViolencia() {
+    document.querySelectorAll('#violencia-form input, #violencia-form select').forEach(element => {
+        if(element.type === 'checkbox' || element.type === 'radio') {
+            element.checked = false;
+        } else {
+            element.value = '';
+        }
+    });
+    document.getElementById('violencia-abrigoInfo').style.display = 'none';
+    atualizarTextoViolencia();
+}
+
+function limparFurto() {
+    document.querySelectorAll('#furto-form input, #furto-form select').forEach(element => {
+        if(element.type === 'checkbox' || element.type === 'radio') {
+            element.checked = false;
+        } else {
+            element.value = '';
+        }
+    });
+    document.querySelector('#furto-form .assaltantes-input').style.display = 'none';
+    document.getElementById('furto-predefinido').checked = false;
+    atualizarTextoFurto();
+}
+
+document.getElementById('furto-predefinido').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('furto-furto').checked = true;
+        document.getElementById('furto-roubo').checked = false;
+        document.getElementById('furto-tipoVeiculo').value = 'O SEU CARRO';
+        document.getElementById('furto-localVeiculo').value = 'NA VIA';
+        document.querySelector('input[name="furto-rastreador"][value="NÃO"]').checked = true;
+        document.getElementById('furto-alertaTemporario').checked = true;
+        document.getElementById('furto-boDelegacia').checked = true;
+        document.getElementById('furto-repasseRede').checked = true;
+        document.getElementById('furto-atendimento').value = 'NÃO AGUARDA ATENDIMENTO';
+        document.getElementById('furto-detalhesVeiculo').value = '';
+        document.getElementById('furto-detalhesVeiculoCheckbox').checked = true;
+        document.querySelector('#furto-form .assaltantes-input').style.display = 'none';
+        atualizarTextoFurto();
+    }
+});
+
+// Event Listeners específicos
+document.querySelectorAll('#perturbacao-form input, #perturbacao-form select').forEach(element => {
+    element.addEventListener('change', atualizarTextoPerturbacao);
+});
+
+document.getElementById('perturbacao-quantidade').addEventListener('input', function() {
+    document.getElementById('perturbacao-naoSabe').checked = false;
+    atualizarTextoPerturbacao();
+});
+
+document.getElementById('perturbacao-naoSabe').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('perturbacao-quantidade').value = '';
+    }
+    atualizarTextoPerturbacao();
+});
+
+document.getElementById('violencia-abrigada').addEventListener('change', function() {
+    document.getElementById('violencia-abrigoInfo').style.display = 
+        (this.checked && document.getElementById('violencia-denunciante').value === 'VITIMA') 
+        ? 'inline-block' : 'none';
+    atualizarTextoViolencia();
+});
+
+document.getElementById('violencia-abrigoInfo').addEventListener('input', atualizarTextoViolencia);
+document.getElementById('violencia-denunciante').addEventListener('change', () => {
+    document.getElementById('violencia-abrigoInfo').style.display = 
+        (document.getElementById('violencia-abrigada').checked && 
+         document.getElementById('violencia-denunciante').value === 'VITIMA') 
+        ? 'inline-block' : 'none';
+    atualizarTextoViolencia();
+});
+
+document.querySelectorAll('#violencia-form select, #violencia-form input').forEach(element => {
+    element.addEventListener('change', atualizarTextoViolencia);
+});
+
+document.getElementById('furto-roubo').addEventListener('change', () => toggleAssaltantes());
+document.getElementById('furto-furto').addEventListener('change', () => toggleAssaltantes());
+document.getElementById('furto-predefinido').addEventListener('change', () => preencherPredefinido());
+document.querySelectorAll('#furto-form input, #furto-form select').forEach(element => {
+    element.addEventListener('change', atualizarTextoFurto);
+});
+
+function toggleAssaltantes() {
+    const show = document.getElementById('furto-roubo').checked;
+    document.querySelector('#furto-form .assaltantes-input').style.display = show ? 'inline-block' : 'none';
+    if (!show) document.getElementById('furto-qtdAssaltantes').value = '';
+    atualizarTextoFurto();
+}
+
+function preencherPredefinido() {
+    if (document.getElementById('furto-predefinido').checked) {
+        document.getElementById('furto-furto').checked = true;
+        document.getElementById('furto-roubo').checked = false;
+        document.getElementById('furto-tipoVeiculo').value = 'O SEU CARRO';
+        document.getElementById('furto-localVeiculo').value = 'NA VIA';
+        document.querySelector('input[name="furto-rastreador"][value="NÃO"]').checked = true;
+        document.getElementById('furto-alertaTemporario').checked = true;
+        document.getElementById('furto-boDelegacia').checked = true;
+        document.getElementById('furto-repasseRede').checked = true;
+        document.getElementById('furto-atendimento').value = 'NÃO AGUARDA ATENDIMENTO';
+        document.getElementById('furto-detalhesVeiculo').value = '';
+        document.getElementById('furto-detalhesVeiculoCheckbox').checked = true;
+        toggleAssaltantes();
+    }
+    atualizarTextoFurto();
+}
+
+// Inicialização
+showForm('perturbacao');
+
+// Adicione estas variáveis no início do script
+let iconeSelecionadoOutros = null;
+const textosOutros = {
+    'oficial-justica': 'OFICIAL DE JUSTIÇA EM CUMPRIMENTO DE MANDADO DE BUSCA E APREENSÃO DE VEÍCULO COM FULCRO NOS AUTOS (), DA ª VARA CÍVEL DE CURITIBA, SOLICITA APOIO DE EQUIPE POLICIAL ANTE A RESISTÊNCIA PASSIVA DO DETENTOR DO AUTOMÓVEL EM ENTREGAR VOLUNTARIAMENTE O BEM EM SUA POSSE.',
+    'oficial-justica-lazy': 'RELATA ESTAR NO LOCAL PARA REALIZAR UMA APREENSÃO DE VEICULO E ESTAR SOFRENDO RESISTÊNCIA. PEDE APOIO POLICIAL.',
+    'pai-visita': 'INFORMA SER O SEU DIA ESTABELECIDO PELO JUIZ PARA VISITA AO SEU FILHO E, A GENITORA DA CRIANÇA, ESTA LHE IMPEDINDO DE ENCONTRA-LO. PEDE PRESENÇA POLICIAL. AGUARDA ATENDIMENTO.',
+    'Furto a Residência': 'SOLICITANTE INFORMA QUE SUA RESIDÊNCIA FOI ARROMBADA E PERTENCES FURTADOS. SEM INFORMAÇÃO DE AUTORIA ATÉ O MOMENTO. DESEJA PRESENÇA POLICIAL. AGUARDA ATENDIMENTO.',
+    'furto-veiculo-a': 'SOLICITANTE INFORMA QUE DEIXOU O SEU VEICULO ESTACIONADO E, AO RETORNAR, NOTOU QUE O MESMO HAVIA SIDO FURTADO.\nVEICULO:\nCOR:\nPLACA:\nANO/MODELO:\nTIPO:\nDETALHES:\nRASTREADOR SIM (), NÃO (), ANTIFURTO SIM () NÃO()\nALERTA SENDO GERADO.\n\nNÃO AGUARDA VIATURA, SOMENTE PARA REPASSE À REDE.',
+    'next-1': 'TEXTO TESTE',
+    'next-2': 'TEXTO TESTE',
+    'next-3': 'TEXTO TESTE',
+    'next-4': 'TEXTO TESTE',
+    'next-5': 'TEXTO TESTE',
+    'next-6': 'TEXTO TESTE',
+    'next-7': 'TEXTO TESTE',
+    'estagio': 'REGISTRO DA OCORRÊNCIA REALIZADO PELO(A) {NOME}, CPF {CPF}, QUE SE ENCONTRA EM ESTÁGIO.'
+};
+
+// Adicione esta função
+function selecionarIconeOutros(elemento, id) {
+    const estavaSelecionado = elemento.classList.contains('icone-selecionado');
+    
+    // Remove seleção de todos os ícones e esconde as caixas de texto
+    document.querySelectorAll('.icone-opcao').forEach(icone => {
+        icone.classList.remove('icone-selecionado');
+        icone.querySelector('.input-container')?.classList.add('hidden');
+    });
+    
+    if(!estavaSelecionado) {
+        elemento.classList.add('icone-selecionado');
+        iconeSelecionadoOutros = id;
+        elemento.querySelector('.input-container')?.classList.remove('hidden');
+        atualizarTextoOutros();
+    } else {
+        iconeSelecionadoOutros = null;
+        document.querySelector('.input-container').classList.add('hidden');
+        document.getElementById('resultado').textContent = '';
+    }
+}
+
+function atualizarTextoOutros() {
+    if (iconeSelecionadoOutros) {
+        let texto = textosOutros[iconeSelecionadoOutros];
+        if (iconeSelecionadoOutros === 'estagio') {
+            const nome = document.getElementById('estagio-nome').value;
+            const cpf = document.getElementById('estagio-cpf').value;
+            texto = texto.replace('{NOME}', nome).replace('{CPF}', cpf);
+        }
+        document.getElementById('resultado').textContent = texto;
+    } else {
+        document.getElementById('resultado').textContent = '';
+    }
+}
+
+// Adicione event listeners para atualizar o texto ao digitar nas caixas de texto
+document.getElementById('estagio-nome').addEventListener('input', atualizarTextoOutros);
+document.getElementById('estagio-cpf').addEventListener('input', atualizarTextoOutros);
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    document.querySelectorAll('.form-section').forEach(section => section.classList.toggle('dark-mode'));
+    document.querySelectorAll('.result-box').forEach(box => box.classList.toggle('dark-mode'));
+    document.querySelectorAll('.button-header button').forEach(button => button.classList.toggle('dark-mode'));
+    document.querySelectorAll('.icone-opcao').forEach(icon => icon.classList.toggle('dark-mode'));
+    document.querySelectorAll('.icone-selecionado').forEach(icon => icon.classList.toggle('dark-mode'));
+    document.querySelector('.fixed-result-container').classList.toggle('dark-mode');
+}
+
+// Funções para Acidente de Trânsito
+function atualizarTextoAcidente() {
+    const getValue = id => document.getElementById(`acidente-${id}`).value;
+    const getCheckboxValues = name => Array.from(document.querySelectorAll(`input[name="acidente-${name}"]:checked`)).map(el => el.value);
+    const isChecked = id => document.getElementById(`acidente-${id}`).checked;
+
+    const veiculos = getCheckboxValues('veiculo');
+    const tipo = getValue('tipo');
+    const detalhes = getValue('detalhes');
+    const feridos = getCheckboxValues('feridos')[0];
+    const condutorEmbriagado = isChecked('condutorEmbriagado');
+    const condutorDeixouLocal = isChecked('condutorDeixouLocal');
+    const socorroMedico = isChecked('socorroMedico');
+    const orientadoAcionarAmbulancia = isChecked('orientadoAcionarAmbulancia');
+    const transferidaSiate = isChecked('transferidaSiate');
+    const aguardaAtendimento = isChecked('aguardaAtendimento');
+    const presencaPolicial = isChecked('presencaPolicial');
+    const placaVeiculos = isChecked('placaVeiculos');
+    const placaVeiculosTexto = getValue('placaVeiculosTexto');
+
+    let texto = '';
+
+    if (tipo === 'Colisão') {
+        if (veiculos.includes('ANTEPARO')) {
+            let detalheTexto = '';
+            switch(detalhes) {
+                case 'Poste':
+                    detalheTexto = 'UM POSTE';
+                    break;
+                case 'Placa':
+                    detalheTexto = 'UMA PLACA DE SINALIZAÇÃO';
+                    break;
+                case 'Árvore':
+                    detalheTexto = 'UMA ÁRVORE';
+                    break;
+                case 'Muro':
+                    detalheTexto = 'O MURO DE UM IMÓVEL';
+                    break;
+                case 'Portão':
+                    detalheTexto = 'O PORTÃO DE UM IMÓVEL';
+                    break;
+                case 'Meio-fio':
+                    detalheTexto = 'O MEIO-FIO';
+                    break;
+                default:
+                    detalheTexto = detalhes;
+            }
+            texto = `SOLICITANTE INFORMA UM ${veiculos.filter(v => v !== 'ANTEPARO').join(' X ')} X ANTEPARO NA VIA, SENDO QUE A COLISÃO FOI CONTRA ${detalheTexto}.`;
+        } else {
+            if (veiculos.length === 1) {
+                texto = `SOLICITANTE INFORMA UMA COLISÃO ${veiculos[0]} X ${veiculos[0]} NA VIA PUBLICA.`;
+            } else {
+                texto = `SOLICITANTE INFORMA UMA COLISÃO ${veiculos.join(' X ')} NA VIA PUBLICA.`;
+            }
+            if (detalhes === 'Veículo estacionado') {
+                texto += ' O ACIDENTE ENVOLVEU UM VEICULO QUE ESTAVA ESTACIONADO NA RUA.';
+            }
+        }
+    } else if (tipo === 'Atropelamento') {
+        const veiculoMap = {
+            'CAMINHÃO': 'O CONDUTOR DE UM CAMINHÃO',
+            'ÔNIBUS': 'O CONDUTOR DE UM ÔNIBUS',
+            'VAN': 'O CONDUTOR DE UMA VAN',
+            'AUTO': 'O CONDUTOR DE UM CARRO',
+            'MOTO': 'O CONDUTOR DE UMA MOTOCICLETA',
+            'BICICLETA': 'UM CICLISTA'
+        };
+        const veiculo = veiculos.length === 1 ? veiculoMap[veiculos[0]] : '';
+        const detalhe = detalhes ? detalhes.toUpperCase() : '';
+        texto = `SOLICITANTE INFORMA QUE ${veiculo} ATROPELOU UM ${detalhe} EM VIA PÚBLICA.`;
+    } else if (tipo === 'Capotamento') {
+        texto = `SOLICITANTE INFORMA O CAPOTAMENTO DE ${veiculos.join(' X ')} EM VIA PÚBLICA.`;
+    } else if (tipo === 'Queda de moto') {
+        texto = `SOLICITANTE INFORMA UMA QUEDA DE MOTO NA VIA.`;
+    }
+
+    const textosAdicionais = [];
+    if (feridos) {
+        textosAdicionais.push(feridos === 'sim' ? 'HÁ PESSOA FERIDA NO LOCAL.' : 'NÃO HÁ PESSOA FERIDA NO LOCAL.');
+    }
+    if (condutorEmbriagado) {
+        textosAdicionais.push('RELATA QUE CONDUTOR DO VEICULO ESTA EMBRIAGADO.');
+    }
+    if (condutorDeixouLocal) {
+        textosAdicionais.push('O CONDUTOR DEIXOU O LOCAL DO ACIDENTE ABANDONANDO O VEÍCULO NO LOCAL.');
+    }
+    if (socorroMedico) {
+        textosAdicionais.push('RELATA QUE JÁ ACIONOU UMA AMBULANCIA PARA ATENDIMENTO À VÍTIMA.');
+    }
+    if (orientadoAcionarAmbulancia) {
+        textosAdicionais.push('SOLICITANTE ORIENTADO A ACIONAR UMA AMBULANCIA PARA ATENDIMENTO À VITIMA.');
+    }
+    if (transferidaSiate) {
+        textosAdicionais.push('A LIGAÇÃO FOI TRANSFERIDA PARA O SIATE.');
+    }
+    if (aguardaAtendimento) {
+        textosAdicionais.push('AGUARDA ATENDIMENTO.');
+    }
+    if (presencaPolicial) {
+        textosAdicionais.push('PEDE PRESENÇA POLICIAL.');
+    }
+
+    if (textosAdicionais.length > 0) {
+        texto += ' ' + textosAdicionais.join(' ');
+    }
+
+    if (placaVeiculos) {
+        texto += '\n\nPLACA DOS VEÍCULOS ENVOLVIDOS: ' + placaVeiculosTexto + '.';
+    }
+
+    document.getElementById('resultado').textContent = texto;
+}
+
+document.querySelectorAll('#acidente-form input, #acidente-form select').forEach(element => {
+    element.addEventListener('change', atualizarTextoAcidente);
+});
+document.getElementById('acidente-placaVeiculosTexto').addEventListener('input', atualizarTextoAcidente);
+
+function limparAcidente() {
+    document.querySelectorAll('#acidente-form input, #acidente-form select').forEach(element => {
+        if(element.type === 'checkbox' || element.type === 'radio') {
+            element.checked = false;
+        } else {
+            element.value = '';
+        }
+    });
+    document.getElementById('acidente-detalhes').style.display = 'none';
+    atualizarTextoAcidente();
+}
+
+function atualizarOpcoesDetalhadas() {
+    const tipoAcidente = document.getElementById('acidente-tipo').value;
+    const detalhesSelect = document.getElementById('acidente-detalhes');
+    const veiculosSelecionados = Array.from(document.querySelectorAll('input[name="acidente-veiculo"]:checked')).map(el => el.value);
+
+    detalhesSelect.innerHTML = ''; // Limpa as opções anteriores
+
+    const optionDefault = document.createElement('option');
+    optionDefault.value = '';
+    optionDefault.textContent = 'Selecione';
+    detalhesSelect.appendChild(optionDefault);
+
+    if (tipoAcidente === 'Colisão') {
+        const opcoes = ['Veículo estacionado'];
+        const opcoesAnteparo = ['Poste', 'Placa', 'Árvore', 'Muro', 'Portão', 'Meio-fio'];
+
+        if (veiculosSelecionados.includes('ANTEPARO')) {
+            opcoesAnteparo.forEach(opcao => {
+                const optionElement = document.createElement('option');
+                optionElement.value = opcao;
+                optionElement.textContent = opcao;
+                detalhesSelect.appendChild(optionElement);
+            });
+        } else {
+            opcoes.forEach(opcao => {
+                const optionElement = document.createElement('option');
+                optionElement.value = opcao;
+                optionElement.textContent = opcao;
+                detalhesSelect.appendChild(optionElement);
+            });
+        }
+        detalhesSelect.style.display = 'inline-block';
+    } else if (tipoAcidente === 'Atropelamento') {
+        const opcoes = ['Pedestre', 'Ciclista', 'Skatista', 'Patinista', 'Patinetista'];
+        opcoes.forEach(opcao => {
+            const optionElement = document.createElement('option');
+            optionElement.value = opcao;
+            optionElement.textContent = opcao;
+            detalhesSelect.appendChild(optionElement);
+        });
+        detalhesSelect.style.display = 'inline-block';
+    } else {
+        detalhesSelect.style.display = 'none';
+    }
+}
+
+document.querySelectorAll('input[name="acidente-veiculo"]').forEach(element => {
+    element.addEventListener('change', atualizarOpcoesDetalhadas);
+});
+
+function presetAcidenteAutoAuto() {
+    document.querySelector('input[name="acidente-preset"][value="auto-auto"]').checked = true;
+    document.querySelector('input[name="acidente-feridos"][value="sim"]').checked = true;
+    document.querySelector('input[name="acidente-veiculo"][value="AUTO"]').checked = true;
+    document.getElementById('acidente-tipo').value = 'Colisão';
+    document.getElementById('acidente-aguardaAtendimento').checked = true;
+    document.getElementById('acidente-condutorEmbriagado').checked = false;
+    document.getElementById('acidente-condutorDeixouLocal').checked = false;
+    document.getElementById('acidente-socorroMedico').checked = false;
+    document.getElementById('acidente-orientadoAcionarAmbulancia').checked = false;
+    document.getElementById('acidente-transferidaSiate').checked = false;
+    document.getElementById('acidente-presencaPolicial').checked = false;
+    document.getElementById('acidente-placaVeiculos').checked = false;
+    document.getElementById('acidente-placaVeiculosTexto').value = '';
+    atualizarTextoAcidente();
+}
+
+document.querySelector('input[name="acidente-preset"][value="auto-auto"]').addEventListener('change', presetAcidenteAutoAuto);
+
+// ...existing code...
+
+function presetAcidenteAutoMoto() {
+    document.querySelector('input[name="acidente-preset"][value="auto-moto"]').checked = true;
+    document.querySelector('input[name="acidente-feridos"][value="sim"]').checked = true;
+    document.querySelector('input[name="acidente-veiculo"][value="AUTO"]').checked = true;
+    document.querySelector('input[name="acidente-veiculo"][value="MOTO"]').checked = true;
+    document.getElementById('acidente-tipo').value = 'Colisão';
+    document.getElementById('acidente-aguardaAtendimento').checked = true;
+    document.getElementById('acidente-condutorEmbriagado').checked = false;
+    document.getElementById('acidente-condutorDeixouLocal').checked = false;
+    document.getElementById('acidente-socorroMedico').checked = false;
+    document.getElementById('acidente-orientadoAcionarAmbulancia').checked = false;
+    document.getElementById('acidente-transferidaSiate').checked = false;
+    document.getElementById('acidente-presencaPolicial').checked = false;
+    document.getElementById('acidente-placaVeiculos').checked = false;
+    document.getElementById('acidente-placaVeiculosTexto').value = '';
+    atualizarTextoAcidente();
+}
+
+function presetAcidenteAutoAutoEmbriagues() {
+    document.querySelector('input[name="acidente-preset"][value="auto-auto-embriagues"]').checked = true;
+    document.querySelector('input[name="acidente-feridos"][value="nao"]').checked = true;
+    document.querySelector('input[name="acidente-veiculo"][value="AUTO"]').checked = true;
+    document.getElementById('acidente-tipo').value = 'Colisão';
+    document.getElementById('acidente-condutorEmbriagado').checked = true;
+    document.getElementById('acidente-aguardaAtendimento').checked = true;
+    document.getElementById('acidente-condutorDeixouLocal').checked = false;
+    document.getElementById('acidente-socorroMedico').checked = false;
+    document.getElementById('acidente-orientadoAcionarAmbulancia').checked = false;
+    document.getElementById('acidente-transferidaSiate').checked = false;
+    document.getElementById('acidente-presencaPolicial').checked = false;
+    document.getElementById('acidente-placaVeiculos').checked = false;
+    document.getElementById('acidente-placaVeiculosTexto').value = '';
+    atualizarTextoAcidente();
+}
+
+// ...existing code...
+
+document.querySelector('input[name="acidente-preset"][value="auto-moto"]').addEventListener('change', presetAcidenteAutoMoto);
+document.querySelector('input[name="acidente-preset"][value="auto-auto-embriagues"]').addEventListener('change', presetAcidenteAutoAutoEmbriagues);
+
+// ...existing code...
+
+    function atualizarTextoApoio() {
+        // Função vazia, pois o conteúdo da aba ainda está em branco
+    }
+
+    function limparApoio() {
+        // Função vazia, pois o conteúdo da aba ainda está em branco
+    }
+
+    showForm('perturbacao');
+
+    </script>
+</body>
+</html>
