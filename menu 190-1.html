@@ -512,7 +512,7 @@
         <button id="furto-button" onclick="showForm('furto')">Furto/Roubo Veículo</button>
         <button id="alarme-button" onclick="showForm('alarme')">Disparo de Alarme</button>
         <button id="acidente-button" onclick="showForm('acidente')">Acidente de Trânsito</button>
-        <button id="apoio-button" onclick="showForm('apoio')">Apoio (desenvolvimento)</button>
+        <button id="apoio-button" onclick="showForm('apoio')">Apoio</button>
         <button id="outros-button" onclick="showForm('outros')">Outros</button>
     </div>
 
@@ -887,6 +887,97 @@
     <!-- Formulário de Apoio -->
     <div id="apoio-form" class="form-container" style="display: none;">
         <h1>APOIO</h1>
+        <div class="form-section">
+            <label>Tipo de apoio:</label>
+            <select id="apoio-tipo" onchange="atualizarSecaoApoio()">
+                <option value="">Selecione</option>
+                <option value="samu-surto-psicotico">Samu - surto psicótico</option>
+                <option value="oficial-de-justica">Oficial de justiça</option>
+                <option value="guincho">Guincho</option>
+            </select>
+        </div>
+        <div id="apoio-samu-surto-psicotico" class="hidden">
+            <div class="form-section">
+                <label>Gênero do paciente:</label>
+                <div>
+                    <label><input type="radio" name="apoio-genero-paciente" value="masculino"> Masculino</label>
+                    <label><input type="radio" name="apoio-genero-paciente" value="feminino"> Feminino</label>
+                </div>
+            </div>
+            <div class="form-section">
+                <label>Idade aproximada:</label>
+                <input type="text" id="apoio-idade-paciente" style="width: 50px;">
+            </div>
+            <div class="form-section">
+                <label>Induzido por:</label>
+                <div>
+                    <label><input type="radio" name="apoio-induzido" value="alcool"> Álcool</label>
+                    <label><input type="radio" name="apoio-induzido" value="entorpecente"> Entorpecente</label>
+                    <label><input type="radio" name="apoio-induzido" value="farmacos"> Fármacos</label>
+                </div>
+            </div>
+            <div class="form-section">
+                <label>Portando arma/objeto:</label>
+                <select id="apoio-arma-objeto">
+                    <option value="">Selecione</option>
+                    <option value="faca">Faca</option>
+                    <option value="facao">Facão</option>
+                    <option value="arma-de-fogo">Arma de fogo</option>
+                    <option value="pedaco-de-madeira">Pedaço de madeira</option>
+                    <option value="barra-de-ferro">Barra de ferro</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <label>Ambulância/contato:</label>
+                <input type="text" id="apoio-ambulancia" placeholder="Ambulância" style="width: 100px;">
+                <input type="text" id="apoio-contato" placeholder="Contato" style="width: 100px;">
+            </div>
+            <div class="form-section">
+                <label>Tempo do atendimento da Ambulância:</label>
+                <div>
+                    <label><input type="radio" name="apoio-tempo-atendimento" value="no-local"> No local</label>
+                    <label><input type="radio" name="apoio-tempo-atendimento" value="em-deslocamento"> Em deslocamento</label>
+                    <label><input type="radio" name="apoio-tempo-atendimento" value="aguardando-disponibilidade"> Aguardando disponibilidade</label>
+                </div>
+            </div>
+            <div class="form-section">
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="apoio-local-encontro"> Local de encontro para deslocamento em conjunto
+                    <input type="text" id="apoio-local-encontro-texto" placeholder="Local" style="opacity: 0.5;">
+                </label>
+            </div>
+        </div>
+        <div id="apoio-guincho" class="hidden">
+            <div class="form-section">
+                <label>Encaminhar:</label>
+                <select id="apoio-encaminhar">
+                    <option value="">Selecione</option>
+                    <option value="veiculo-apreendido">Veículo apreendido</option>
+                    <option value="veiculo-recuperado">Veículo recuperado</option>
+                    <option value="viatura-pane-mecanica">Viatura com pane mecânica</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <label>Tipo de Veículo:</label>
+                <select id="apoio-tipo-veiculo">
+                    <option value="">Selecione</option>
+                    <option value="carro">Carro</option>
+                    <option value="motocicleta">Motocicleta</option>
+                    <option value="van">Van</option>
+                    <option value="onibus">Ônibus</option>
+                    <option value="caminhao">Caminhão</option>
+                    <option value="carreta">Carreta</option>
+                    <option value="cavalo-mecanico">Cavalo mecânico</option>
+                </select>
+            </div>
+            <div class="form-section">
+                <label><input type="checkbox" id="apoio-patio-detran"> Encaminhar o veículo ao pátio do Detran</label><br>
+                <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="apoio-encaminhar-outro"> Encaminhar o veiculo á:
+                    <input type="text" id="apoio-encaminhar-outro-texto" placeholder="Local" style="opacity: 0.5;">
+                </label>
+            </div>
+        </div>
         <!-- Conteúdo da aba ainda em branco -->
     </div>
 
@@ -2009,6 +2100,12 @@ document.querySelector('input[name="acidente-preset"][value="auto-auto-embriague
 
     function limparApoio() {
         // Função vazia, pois o conteúdo da aba ainda está em branco
+    }
+
+    function atualizarSecaoApoio() {
+        const tipoApoio = document.getElementById('apoio-tipo').value;
+        document.getElementById('apoio-samu-surto-psicotico').classList.toggle('hidden', tipoApoio !== 'samu-surto-psicotico');
+        document.getElementById('apoio-guincho').classList.toggle('hidden', tipoApoio !== 'guincho');
     }
 
     showForm('perturbacao');
